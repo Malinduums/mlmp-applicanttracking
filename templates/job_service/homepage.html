@@ -1,0 +1,285 @@
+{% include 'users/header.html' %}
+
+<main class="main">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-single">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-lg-10 col-xl-8">
+                        <div class="hero-content text-center">
+                            <h6 class="hero-sub-title mb-3">AI-Powered Job Platform</h6>
+                            <h1 class="hero-title mb-4">
+                                Find Your <span class="text-primary">Perfect Match</span> or Post Your Job
+                            </h1>
+                            <p class="mb-4 px-3">
+                                Whether you're looking for your next career move or hiring talented professionals, 
+                                our AI-powered platform connects the right people with the right opportunities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Main Sections -->
+    <div class="section-padding">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Post a Job Section -->
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body text-center p-4 p-lg-5">
+                            <div class="mb-4">
+                                <i class="fe-briefcase" style="font-size: clamp(3rem, 5vw, 4rem); color: #1967d2;"></i>
+                            </div>
+                            <h3 class="card-title mb-3">Post a Job</h3>
+                            <p class="card-text mb-4">
+                                Are you an employer looking to hire? Post your job opening and let our AI find 
+                                the perfect candidates for your position.
+                            </p>
+                            <div class="feature-list text-start mb-4">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>AI-powered candidate matching</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>Detailed job posting form</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>Instant candidate recommendations</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>Free to post jobs</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <a href="{% url 'post_job' %}" class="btn btn-primary btn-lg w-100 w-md-auto">
+                                <i class="fe-plus me-2"></i>Post a Job
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Find a Job Section -->
+                <div class="col-12 col-lg-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body text-center p-4 p-lg-5">
+                            <div class="mb-4">
+                                <i class="fe-search" style="font-size: clamp(3rem, 5vw, 4rem); color: #34a853;"></i>
+                            </div>
+                            <h3 class="card-title mb-3">Find a Job</h3>
+                            <p class="card-text mb-4">
+                                Looking for your next opportunity? Upload your CV and get AI-powered job 
+                                recommendations tailored to your skills and experience.
+                            </p>
+                            <div class="feature-list text-start mb-4">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>AI-powered job matching</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>Upload PDF resume</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>Instant job recommendations</span>
+                                    </li>
+                                    <li class="mb-2 d-flex align-items-start">
+                                        <i class="fe-check-circle text-success me-2 mt-1 flex-shrink-0"></i>
+                                        <span>No registration required</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <a href="{% url 'find_job' %}" class="btn btn-success btn-lg w-100 w-md-auto">
+                                <i class="fe-upload me-2"></i>Upload CV & Find Jobs
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="text-center">
+                        <h4 class="mb-4 mb-lg-5">How It Works</h4>
+                        <div class="row g-4">
+                            <div class="col-12 col-md-4">
+                                <div class="text-center h-100">
+                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                         style="width: clamp(60px, 15vw, 80px); height: clamp(60px, 15vw, 80px);">
+                                        <i class="fe-file-text" style="font-size: clamp(1.5rem, 4vw, 2rem); color: #1967d2;"></i>
+                                    </div>
+                                    <h6 class="mb-2">1. Upload</h6>
+                                    <p class="text-muted mb-0">Upload your resume or post your job details</p>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="text-center h-100">
+                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                         style="width: clamp(60px, 15vw, 80px); height: clamp(60px, 15vw, 80px);">
+                                        <i class="fe-cpu" style="font-size: clamp(1.5rem, 4vw, 2rem); color: #34a853;"></i>
+                                    </div>
+                                    <h6 class="mb-2">2. AI Analysis</h6>
+                                    <p class="text-muted mb-0">Our AI analyzes skills and requirements</p>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="text-center h-100">
+                                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                         style="width: clamp(60px, 15vw, 80px); height: clamp(60px, 15vw, 80px);">
+                                        <i class="fe-target" style="font-size: clamp(1.5rem, 4vw, 2rem); color: #fbbc04;"></i>
+                                    </div>
+                                    <h6 class="mb-2">3. Get Matches</h6>
+                                    <p class="text-muted mb-0">Receive personalized recommendations</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Custom CSS for better responsiveness -->
+<style>
+/* Hero section background */
+.hero-section {
+    background-color: #F0F6FE !important;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+}
+
+.hero-single {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.hero-sub-title {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    font-weight: 500;
+    color: #666;
+}
+
+.hero-content p {
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    line-height: 1.6;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 50vh;
+    }
+    
+    .hero-content {
+        padding: 1.5rem 0.5rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero-sub-title {
+        font-size: 1rem !important;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        min-height: 45vh;
+    }
+    
+    .hero-title {
+        font-size: 1.75rem !important;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .feature-list ul li {
+        font-size: 0.9rem;
+    }
+}
+
+/* Ensure proper spacing on all devices */
+.section-padding {
+    padding: 3rem 0;
+}
+
+@media (min-width: 768px) {
+    .section-padding {
+        padding: 4rem 0;
+    }
+}
+
+@media (min-width: 992px) {
+    .section-padding {
+        padding: 5rem 0;
+    }
+}
+
+/* Improve card heights on mobile */
+@media (max-width: 991px) {
+    .card.h-100 {
+        height: auto !important;
+        min-height: auto;
+    }
+}
+
+/* Better button responsiveness */
+.btn-lg {
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+{% include 'users/footer.html' %} 

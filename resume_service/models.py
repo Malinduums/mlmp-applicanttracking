@@ -4,10 +4,11 @@ import os
 
 def resume_upload_path(instance, filename):
     """Generate upload path for resume files"""
-    return f'resumes/{instance.user.id}/{filename}'
+    user_id = instance.user.id if instance.user else 'anonymous'
+    return f'resumes/{user_id}/{filename}'
 
 class Resume(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resumes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='resumes', null=True, blank=True)
     title = models.CharField(max_length=255)
     file = models.FileField(upload_to=resume_upload_path)
     extracted_text = models.TextField(blank=True, null=True)
@@ -18,7 +19,8 @@ class Resume(models.Model):
         ordering = ['-uploaded_at']
     
     def __str__(self):
-        return f"{self.user.username} - {self.title}"
+        user_name = self.user.username if self.user else 'Anonymous'
+        return f"{user_name} - {self.title}"
     
     def filename(self):
         return os.path.basename(self.file.name)

@@ -4,12 +4,8 @@ from .models import Resume
 class ResumeUploadForm(forms.ModelForm):
     class Meta:
         model = Resume
-        fields = ['title', 'file']
+        fields = ['file']
         widgets = {
-            'title': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter resume title (e.g., "Software Engineer Resume")'
-            }),
             'file': forms.FileInput(attrs={
                 'class': 'form-control',
                 'accept': '.pdf'
