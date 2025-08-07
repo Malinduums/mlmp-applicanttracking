@@ -8,7 +8,6 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>
-                    <i class="fas fa-brain me-2"></i>
                     Job Recommendations
                 </h2>
                 <a href="{% url 'resume_service:upload_resume' %}" class="btn btn-primary">
@@ -44,10 +43,6 @@
                             </p>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-success mb-1">
-                                <i class="fas fa-brain me-1"></i>
-                                <strong>Analysis:</strong> Advanced Algorithm
-                            </p>
                             <p class="text-info mb-0">
                                 <i class="fas fa-database me-1"></i>
                                 <strong>Jobs Analyzed:</strong> {{ total_jobs_analyzed|default:"Unknown" }} positions
@@ -92,11 +87,6 @@
                                     <div class="mb-3">
                                         <h6 class="card-title text-primary">{{ job.workplace|default:"Location Not Specified" }}</h6>
                                         <span class="badge bg-secondary">{{ job.working_mode|default:"Mode Not Specified" }}</span>
-                                        {% if job.ai_ranked %}
-                                            <span class="badge bg-info float-end">
-                                                <i class="fas fa-brain me-1"></i>AI Ranked
-                                            </span>
-                                        {% endif %}
                                     </div>
                                     
                                     {% if job.salary_min or job.salary_max %}
@@ -152,19 +142,6 @@
                                             </p>
                                         </div>
                                     {% endif %}
-                                </div>
-                                
-                                <div class="card-footer bg-transparent">
-                                    <div class="d-flex justify-content-between">
-                                        <button class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-eye me-1"></i>
-                                            View Details
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm">
-                                            <i class="fas fa-heart me-1"></i>
-                                            Save Job
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         </div>

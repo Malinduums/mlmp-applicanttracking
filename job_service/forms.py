@@ -1,5 +1,62 @@
 from django import forms
-from .models import JobDescription
+from .models import JobDescription, Job
+
+class JobForm(forms.ModelForm):
+    """Form for posting jobs that matches the Job model structure"""
+    
+    class Meta:
+        model = Job
+        fields = [
+            'position', 'workplace', 'working_mode',
+            'job_role_and_duties', 'requisite_skill',
+            'salary_min', 'salary_max', 'location'
+        ]
+        widgets = {
+            'position': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'e.g., Senior Python Developer'
+            }),
+            'workplace': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Company Name'
+            }),
+            'working_mode': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'job_role_and_duties': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Describe the job role, responsibilities, and duties...'
+            }),
+            'requisite_skill': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Required skills, experience, and qualifications...'
+            }),
+            'salary_min': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Minimum salary (optional)'
+            }),
+            'salary_max': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Maximum salary (optional)'
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Job location (e.g., New York, NY)'
+            }),
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        salary_min = cleaned_data.get('salary_min')
+        salary_max = cleaned_data.get('salary_max')
+        
+        # Validate salary range
+        if salary_min and salary_max and salary_min > salary_max:
+            raise forms.ValidationError("Minimum salary cannot be greater than maximum salary.")
+        
+        return cleaned_data
 
 class JobDescriptionForm(forms.ModelForm):
     """Form for employers to upload job descriptions"""

@@ -115,7 +115,9 @@ class AdvancedJobRecommendationSystem:
             
             recommendations = []
             for idx in top_indices:
-                job = self.jobs_data[idx]
+                # Convert numpy int64 to regular int for QuerySet indexing
+                job_idx = int(idx)
+                job = self.jobs_data[job_idx]
                 recommendations.append({
                     'position': job.position,
                     'workplace': job.workplace,
@@ -157,7 +159,9 @@ class AdvancedJobRecommendationSystem:
             
             recommendations = []
             for i, idx in enumerate(indices[0]):
-                job = self.jobs_data[idx]
+                # Convert numpy int64 to regular int for QuerySet indexing
+                job_idx = int(idx)
+                job = self.jobs_data[job_idx]
                 # Convert distance to similarity score (0-100)
                 similarity_score = max(0, min(100, (1 - distances[0][i]) * 100))
                 

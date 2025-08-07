@@ -3,11 +3,12 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.db import models
 import logging
 import json
 
 from .models import Job, JobDescription
-from .forms import JobDescriptionForm
+from .forms import JobDescriptionForm, JobForm
 
 # Import advanced ML system
 from ml_service.models import AdvancedJobRecommendationSystem
@@ -21,15 +22,15 @@ def homepage(request):
 def post_job(request):
     """Handle job posting by employers"""
     if request.method == 'POST':
-        form = JobDescriptionForm(request.POST, request.FILES)
+        form = JobForm(request.POST)
         if form.is_valid():
-            job_desc = form.save()
+            job = form.save()
             messages.success(request, 'Job posted successfully! Your job is now live and candidates can apply.')
-            return redirect('job_service:job_description_detail', job_id=job_desc.id)
+            return redirect('job_service:job_list')
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
-        form = JobDescriptionForm()
+        form = JobForm()
     
     return render(request, 'job_service/post_job.html', {'form': form})
 
@@ -88,12 +89,48 @@ def get_candidate_recommendations(job_description, top_n=20):
         return []
 
 def job_list(request):
-    """List all job descriptions"""
-    job_descriptions = JobDescription.objects.filter(is_active=True).order_by('-created_at')
+    """List all jobs with filtering"""
+    jobs = Job.objects.filter(is_active=True)
     
-    return render(request, 'job_service/job_list.html', {
-        'job_descriptions': job_descriptions
-    })
+    # Get filter parameters
+    search = request.GET.get('search', '')
+    working_mode = request.GET.get('working_mode', '')
+    location = request.GET.get('location', '')
+    
+    # Apply filters
+    if search:
+        jobs = jobs.filter(
+            models.Q(position__icontains=search) |
+            models.Q(workplace__icontains=search) |
+            models.Q(job_role_and_duties__icontains=search) |
+            models.Q(requisite_skill__icontains=search)
+        )
+    
+    if working_mode:
+        jobs = jobs.filter(working_mode=working_mode)
+    
+    if location:
+        jobs = jobs.filter(location__icontains=location)
+    
+    # Order by creation date
+    jobs = jobs.order_by('-created_at')
+    
+    # Get unique values for filters
+    working_modes = Job.objects.values_list('working_mode', flat=True).distinct()
+    locations = Job.objects.values_list('location', flat=True).distinct().exclude(location='')
+    
+    context = {
+        'jobs': jobs,
+        'working_modes': working_modes,
+        'locations': locations,
+        'current_filters': {
+            'search': search,
+            'working_mode': working_mode,
+            'location': location,
+        }
+    }
+    
+    return render(request, 'job_service/job_list.html', context)
 
 @csrf_exempt
 @require_http_methods(["POST"])

@@ -21,49 +21,10 @@
                                 {% endfor %}
                             {% endif %}
 
-                            <form method="post" enctype="multipart/form-data">
+                            <form method="post">
                                 {% csrf_token %}
                                 
                                 <div class="row g-3">
-                                    <!-- Employer Information -->
-                                    <div class="col-12">
-                                        <h5 class="mb-3 text-primary">Employer Information</h5>
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-6">
-                                        <label for="{{ form.employer_name.id_for_label }}" class="form-label">Company Name *</label>
-                                        {{ form.employer_name }}
-                                        {% if form.employer_name.errors %}
-                                            <div class="text-danger small">{{ form.employer_name.errors.0 }}</div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-6">
-                                        <label for="{{ form.employer_email.id_for_label }}" class="form-label">Email *</label>
-                                        {{ form.employer_email }}
-                                        {% if form.employer_email.errors %}
-                                            <div class="text-danger small">{{ form.employer_email.errors.0 }}</div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-6">
-                                        <label for="{{ form.contact_person.id_for_label }}" class="form-label">Contact Person *</label>
-                                        {{ form.contact_person }}
-                                        {% if form.contact_person.errors %}
-                                            <div class="text-danger small">{{ form.contact_person.errors.0 }}</div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-6">
-                                        <label for="{{ form.location.id_for_label }}" class="form-label">Job Location</label>
-                                        {{ form.location }}
-                                        {% if form.location.errors %}
-                                            <div class="text-danger small">{{ form.location.errors.0 }}</div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-
-                                <hr class="my-4">
 
                                 <!-- Job Details -->
                                 <div class="row g-3">
@@ -103,22 +64,21 @@
                                         {% endif %}
                                     </div>
                                     
-                                    <div class="col-12 col-md-6">
-                                        <label for="{{ form.salary_max.id_for_label }}" class="form-label">Maximum Salary</label>
-                                        {{ form.salary_max }}
-                                        {% if form.salary_max.errors %}
-                                            <div class="text-danger small">{{ form.salary_max.errors.0 }}</div>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-6">
-                                        <label for="{{ form.job_description_file.id_for_label }}" class="form-label">Job Description File (Optional)</label>
-                                        {{ form.job_description_file }}
-                                        {% if form.job_description_file.errors %}
-                                            <div class="text-danger small">{{ form.job_description_file.errors.0 }}</div>
-                                        {% endif %}
-                                        <small class="text-muted">Upload PDF, DOC, DOCX, or TXT file</small>
-                                    </div>
+                                                                         <div class="col-12 col-md-6">
+                                         <label for="{{ form.salary_max.id_for_label }}" class="form-label">Maximum Salary</label>
+                                         {{ form.salary_max }}
+                                         {% if form.salary_max.errors %}
+                                             <div class="text-danger small">{{ form.salary_max.errors.0 }}</div>
+                                         {% endif %}
+                                     </div>
+                                     
+                                     <div class="col-12 col-md-6">
+                                         <label for="{{ form.location.id_for_label }}" class="form-label">Job Location</label>
+                                         {{ form.location }}
+                                         {% if form.location.errors %}
+                                             <div class="text-danger small">{{ form.location.errors.0 }}</div>
+                                         {% endif %}
+                                     </div>
                                 </div>
 
                                 <div class="row g-3">
@@ -160,8 +120,30 @@
     </div>
 </main>
 
-<!-- Custom CSS for better responsiveness -->
+<!-- Custom CSS for better responsiveness and fix flickering -->
 <style>
+/* Fix flickering issues */
+.main {
+    overflow-x: hidden;
+}
+
+.card {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.form-control, .form-select {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
     .card-body {
         padding: 1rem !important;
@@ -186,6 +168,65 @@
         font-size: 1.25rem !important;
     }
 }
+
+/* Prevent layout shifts */
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
+    outline: 0;
+}
+
+/* Stable form layout */
+.row.g-3 {
+    margin: 0;
+}
+
+.col-12, .col-md-6 {
+    padding: 0.5rem;
+}
+
+/* Disable animations that cause flickering */
+.animate, .wow, .fadeIn, .slideInUp {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Prevent any hover effects that might cause flickering */
+.form-control:hover, .form-select:hover, .btn:hover {
+    transform: none !important;
+}
+
+/* Ensure stable positioning */
+.card-body, .form-group, .form-control, .form-select {
+    position: relative;
+    z-index: 1;
+}
 </style>
+
+<!-- Disable problematic JavaScript for this page -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Disable animations that might cause flickering
+    if (typeof WOW !== 'undefined') {
+        WOW.prototype.init = function() {};
+    }
+    
+    // Disable isotope animations
+    if (typeof $.fn.isotope !== 'undefined') {
+        $.fn.isotope = function() { return this; };
+    }
+    
+    // Disable masonry animations
+    if (typeof $.fn.masonry !== 'undefined') {
+        $.fn.masonry = function() { return this; };
+    }
+    
+    // Disable carousel animations
+    if (typeof $.fn.owlCarousel !== 'undefined') {
+        $.fn.owlCarousel = function() { return this; };
+    }
+});
+</script>
 
 {% include 'users/footer.html' %} 

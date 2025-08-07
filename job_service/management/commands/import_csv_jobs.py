@@ -1,117 +1,132 @@
+import csv
+import os
+from decimal import Decimal
 from django.core.management.base import BaseCommand
 from job_service.models import Job
-import pandas as pd
-import os
-import sys
+
 
 class Command(BaseCommand):
-    help = 'Import first 500 jobs from CSV file to PostgreSQL database'
+    help = 'Import jobs from JobsFE.csv file'
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--csv-file',
+            '--file',
             type=str,
-            default='MLModel/JobsFE.csv',
-            help='Path to the CSV file (default: MLModel/JobsFE.csv)'
+            default='JobsFE.csv',
+            help='Path to the CSV file (default: JobsFE.csv)'
         )
         parser.add_argument(
-            '--limit',
-            type=int,
-            default=500,
-            help='Number of jobs to import (default: 500)'
+            '--clear',
+            action='store_true',
+            help='Clear existing jobs before importing'
         )
 
     def handle(self, *args, **options):
-        csv_file = options['csv_file']
-        limit = options['limit']
-        
-        # Check if CSV file exists
-        if not os.path.exists(csv_file):
+        file_path = options['file']
+        clear_existing = options['clear']
+
+        # Check if file exists
+        if not os.path.exists(file_path):
             self.stdout.write(
-                self.style.ERROR(f'CSV file not found: {csv_file}')
+                self.style.ERROR(f'File {file_path} not found!')
             )
             return
-        
-        try:
-            # Read CSV file
-            self.stdout.write(f'Reading CSV file: {csv_file}')
-            df = pd.read_csv(csv_file)
-            
-            # Limit to first N jobs
-            df = df.head(limit)
-            self.stdout.write(f'Found {len(df)} jobs to import')
-            
-            # Clear existing jobs (optional)
-            self.stdout.write('Clearing existing jobs...')
+
+        # Clear existing jobs if requested
+        if clear_existing:
             Job.objects.all().delete()
-            
-            # Import jobs
-            created_count = 0
-            for index, row in df.iterrows():
-                try:
-                    # Map CSV columns to Job model fields
-                    job_data = {
-                        'position': str(row.get('position', 'Unknown Position'))[:255],
-                        'workplace': str(row.get('workplace', 'Unknown Company'))[:255],
-                        'working_mode': self.map_working_mode(row.get('working_mode', 'full_time')),
-                        'job_role_and_duties': str(row.get('job_role_and_duties', ''))[:10000],
-                        'requisite_skill': str(row.get('requisite_skill', ''))[:10000],
-                        'salary_min': self.parse_salary(row.get('salary_min')),
-                        'salary_max': self.parse_salary(row.get('salary_max')),
-                        'location': str(row.get('location', ''))[:255],
-                        'is_active': True
-                    }
-                    
-                    # Create job
-                    job = Job.objects.create(**job_data)
-                    created_count += 1
-                    
-                    if created_count % 50 == 0:
-                        self.stdout.write(f'Imported {created_count} jobs...')
-                        
-                except Exception as e:
-                    self.stdout.write(
-                        self.style.WARNING(f'Error importing job {index}: {str(e)}')
-                    )
-                    continue
-            
             self.stdout.write(
-                self.style.SUCCESS(f'Successfully imported {created_count} jobs to PostgreSQL')
+                self.style.SUCCESS('Cleared existing jobs.')
             )
-            
+
+        # Import jobs
+        imported_count = 0
+        skipped_count = 0
+        error_count = 0
+
+        try:
+            with open(file_path, 'r', encoding='utf-8') as csvfile:
+                reader = csv.DictReader(csvfile)
+                
+                for row in reader:
+                    try:
+                        # Clean and validate data
+                        job_id = row.get('Job Id', '').strip()
+                        workplace = row.get('workplace', '').strip()
+                        working_mode = row.get('working_mode', '').strip().lower()
+                        salary = row.get('salary', '').strip()
+                        position = row.get('position', '').strip()
+                        job_role_and_duties = row.get('job_role_and_duties', '').strip()
+                        requisite_skill = row.get('requisite_skill', '').strip()
+                        offer_details = row.get('offer_details', '').strip()
+
+                        # Skip if essential fields are empty
+                        if not position or not workplace:
+                            skipped_count += 1
+                            continue
+
+                        # Map working mode to choices
+                        working_mode_mapping = {
+                            'full time': 'full_time',
+                            'part time': 'part_time',
+                            'contract': 'contract',
+                            'freelance': 'freelance',
+                            'internship': 'internship',
+                            'remote': 'remote',
+                        }
+                        
+                        working_mode = working_mode_mapping.get(working_mode, 'full_time')
+
+                        # Parse salary
+                        salary_min = None
+                        salary_max = None
+                        if salary:
+                            try:
+                                # Remove currency symbols and commas
+                                salary_clean = salary.replace('$', '').replace(',', '').replace('£', '').replace('€', '')
+                                if '-' in salary_clean:
+                                    parts = salary_clean.split('-')
+                                    if len(parts) == 2:
+                                        salary_min = Decimal(parts[0].strip())
+                                        salary_max = Decimal(parts[1].strip())
+                                else:
+                                    salary_min = Decimal(salary_clean)
+                                    salary_max = salary_min
+                            except (ValueError, TypeError):
+                                pass
+
+                        # Create job object
+                        job = Job(
+                            position=position,
+                            workplace=workplace,
+                            working_mode=working_mode,
+                            job_role_and_duties=job_role_and_duties,
+                            requisite_skill=requisite_skill,
+                            salary_min=salary_min,
+                            salary_max=salary_max,
+                            location=workplace,  # Use workplace as location
+                        )
+                        
+                        job.save()
+                        imported_count += 1
+
+                        # Progress indicator
+                        if imported_count % 100 == 0:
+                            self.stdout.write(f'Imported {imported_count} jobs...')
+
+                    except Exception as e:
+                        error_count += 1
+                        self.stdout.write(
+                            self.style.WARNING(f'Error importing row: {e}')
+                        )
+
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f'Import completed! Imported: {imported_count}, Skipped: {skipped_count}, Errors: {error_count}'
+                )
+            )
+
         except Exception as e:
             self.stdout.write(
-                self.style.ERROR(f'Error reading CSV file: {str(e)}')
-            )
-    
-    def map_working_mode(self, mode):
-        """Map working mode to Django choices"""
-        mode = str(mode).lower().strip()
-        
-        # Map common variations to Django choices
-        mode_mapping = {
-            'full time': 'full_time',
-            'full-time': 'full_time',
-            'part time': 'part_time',
-            'part-time': 'part_time',
-            'contract': 'contract',
-            'freelance': 'freelance',
-            'internship': 'internship',
-            'remote': 'remote',
-            'work from home': 'remote',
-            'wfh': 'remote'
-        }
-        
-        return mode_mapping.get(mode, 'full_time')
-    
-    def parse_salary(self, salary):
-        """Parse salary field to decimal"""
-        if pd.isna(salary) or salary == '' or salary is None:
-            return None
-        
-        try:
-            # Remove currency symbols and commas
-            salary_str = str(salary).replace('$', '').replace(',', '').replace('USD', '').strip()
-            return float(salary_str)
-        except (ValueError, TypeError):
-            return None 
+                self.style.ERROR(f'Error reading CSV file: {e}')
+            ) 
