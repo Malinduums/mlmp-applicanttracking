@@ -29,6 +29,6 @@ Start the server
 python manage.py runserver
 
 
-Step 3: Access the Application
+Step 3 - Access the Application
 
 Main Site: http://localhost:8000
